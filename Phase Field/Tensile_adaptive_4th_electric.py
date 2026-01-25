@@ -1,7 +1,3 @@
-# Tensile Test with Piezoresistive Monitoring
-# Implements the electromechanical phase field to study fracture with self-sensing
-# Based on Quinteros et al., CMAME 407 (2023)
-
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 import numpy as np
@@ -11,7 +7,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 import scipy.io
-import imageio  # For GIF creation
+import imageio
 tf.reset_default_graph()
 tf.logging.set_verbosity(tf.logging.ERROR)
 
@@ -29,20 +25,7 @@ from utils.PINN2D_PF_Electric import CalculateUPhiElectric
 np.random.seed(1234)
 tf.set_random_seed(1234)
 
-# ==================== HOLE GEOMETRY FUNCTIONS ====================
 def generate_random_holes(num_holes, L, W, hole_type='circle', seed=42):
-    """
-    Generate random non-overlapping holes.
-    
-    Args:
-        num_holes: Number of holes to generate
-        L, W: Domain dimensions
-        hole_type: 'circle', 'rect', or 'mixed'
-        seed: Random seed for reproducibility
-    
-    Returns:
-        List of hole dictionaries
-    """
     np.random.seed(seed)
     holes = []
     max_attempts = 100
@@ -75,25 +58,6 @@ def generate_random_holes(num_holes, L, W, hole_type='circle', seed=42):
             print(f"Warning: Could not place hole {i+1} without overlap")
     
     return holes
-
-
-def check_hole_overlap(new_hole, existing_holes, margin=0.03):
-    """Check if new hole overlaps with existing ones."""
-    for hole in existing_holes:
-        dist = np.sqrt((new_hole['center'][0] - hole['center'][0])**2 + 
-                       (new_hole['center'][1] - hole['center'][1])**2)
-        min_dist = get_hole_radius(new_hole) + get_hole_radius(hole) + margin
-        if dist < min_dist:
-            return True
-    return False
-
-
-def get_hole_radius(hole):
-    """Get effective radius for overlap checking."""
-    if hole['type'] == 'circle':
-        return hole['radius']
-    else:
-        return np.sqrt(hole['width']**2 + hole['height']**2) / 2
 
 
 def point_in_hole(x, y, hole):
@@ -136,7 +100,6 @@ def plot_holes_on_scatter(ax, holes, color='red', alpha=0.5):
 
 
 def scatterPlotWithHoles(X_f, figHeight, figWidth, filename, holes):
-    """Scatter plot of collocation points with holes visualized."""
     fig, ax = plt.subplots(figsize=(figWidth, figHeight))
     ax.scatter(X_f[:, 0], X_f[:, 1], s=0.5, c='blue', alpha=0.6)
     plot_holes_on_scatter(ax, holes, color='salmon', alpha=0.7)
@@ -149,9 +112,6 @@ def scatterPlotWithHoles(X_f, figHeight, figWidth, filename, holes):
     plt.close()
 
 class Quadrilateral(Geometry2D):
-    '''
-    Class for defining a quadrilateral domain
-    '''
     def __init__(self, quadDom):
         self.quadDom = quadDom
         
@@ -174,9 +134,6 @@ class Quadrilateral(Geometry2D):
         
 
 class PINN_PF_Electric(CalculateUPhiElectric):
-    '''
-    Extended class with boundary conditions for tension plate with electrodes
-    '''
     def __init__(self, model, NN_param):
         super().__init__(model, NN_param)
         
@@ -194,7 +151,6 @@ class PINN_PF_Electric(CalculateUPhiElectric):
         return u, v
     
     def net_hist(self, x, y):
-        """No initial crack - holes create stress concentrations instead"""
         shape = tf.shape(x)
         return tf.zeros((shape[0], shape[1]), dtype=tf.float64)
 
@@ -230,7 +186,6 @@ def plotVoltageField(nPred, xGrid, yGrid, voltage_pred, filename, figHeight, fig
 
 def plotFieldScatter(xGrid, yGrid, field, title, cbar_label, filename, 
                      figHeight, figWidth, holes=None, cmap='viridis'):
-    """Generic scatter plot for any field on filtered grid"""
     
     field_min = float(np.min(field))
     field_max = float(np.max(field))
@@ -315,13 +270,9 @@ def plotResistanceHistory(steps, resistance, filename, figHeight, figWidth):
 def plotGifFrame_OptionB(nPred, xGrid, yGrid, phi_pred, voltage_pred, energy_elec_pred, 
                          Jx, Jy, step_history, resistance_history, energy_history,
                          iStep, v_delta, figHeight, figWidth, model):
-    """
-    Enhanced Visualization with Professional Dark Theme - Scatter-based for filtered grids
-    """
     from matplotlib.gridspec import GridSpec
     from matplotlib.patches import Circle, Rectangle
     
-    # ==================== THEME SETTINGS ====================
     BG_COLOR = '#2d3748'
     PLOT_BG = '#3d4a5c'
     TEXT_COLOR = '#f7fafc'
@@ -349,7 +300,6 @@ def plotGifFrame_OptionB(nPred, xGrid, yGrid, phi_pred, voltage_pred, energy_ele
         
         phi_pred_clipped = np.clip(phi_pred, 0, 1)
         
-        # Helper for scatter-based field plots
         def plot_scatter_panel(ax, data, cmap, title, label, vmin=None, vmax=None):
             if vmin is None:
                 vmin = float(np.min(data))
@@ -357,7 +307,6 @@ def plotGifFrame_OptionB(nPred, xGrid, yGrid, phi_pred, voltage_pred, energy_ele
                 vmax = float(np.max(data))
             sc = ax.scatter(xGrid.flatten(), yGrid.flatten(), c=data.flatten(),
                            cmap=cmap, s=3, vmin=vmin, vmax=vmax)
-            # Draw holes
             for hole in holes:
                 cx, cy = hole['center']
                 if hole['type'] == 'circle':
@@ -376,20 +325,16 @@ def plotGifFrame_OptionB(nPred, xGrid, yGrid, phi_pred, voltage_pred, energy_ele
             ax.set_xticks([])
             ax.set_yticks([])
         
-        # ========== Panel 1: Damage Field ==========
         ax1 = fig.add_subplot(gs[0, 0:2])
         plot_scatter_panel(ax1, phi_pred_clipped, 'gray', 'Damage Field', 'Damage $\\phi$', 0, 1)
         
-        # ========== Panel 2: Voltage Field ==========
         ax2 = fig.add_subplot(gs[0, 2:4])
         plot_scatter_panel(ax2, voltage_pred, 'plasma', 'Electric Potential', 'Voltage (V)', 
                           0, model['V_applied'])
         
-        # ========== Panel 3: Joule Heating ==========
         ax3 = fig.add_subplot(gs[0, 4:6])
         plot_scatter_panel(ax3, energy_elec_pred, 'inferno', 'Joule Heating', 'Power Density')
         
-        # ========== Panel 4: Resistance History ==========
         ax4 = fig.add_subplot(gs[1, 0:3])
         ax4.set_facecolor(PLOT_BG)
         if len(resistance_history) > 0:
@@ -405,7 +350,6 @@ def plotGifFrame_OptionB(nPred, xGrid, yGrid, phi_pred, voltage_pred, energy_ele
             ax4.set_ylabel('$\\Delta R/R_0$ (%)', fontsize=12)
             ax4.set_title('Piezoresistive Response', fontsize=14, fontweight='bold', pad=10)
         
-        # ========== Panel 5: Energy Evolution ==========
         ax5 = fig.add_subplot(gs[1, 3:6])
         ax5.set_facecolor(PLOT_BG)
         if len(step_history) > 0:
@@ -443,10 +387,8 @@ if __name__ == "__main__":
     nSteps = 35
     deltaV = 8e-4  # Displacement increment per step
     
-    # ==================== MODEL PARAMETERS ====================
     model = dict()
     
-    # Mechanical properties
     model['E'] = 500.0 * 1e2 # Young's modulus (MPa)
     model['nu'] = 0.3   # Poisson's ratio
     model['L'] = 1.0    # Plate length
@@ -455,7 +397,6 @@ if __name__ == "__main__":
     model['Gc'] = 1.7   # Fracture energy (N/mm)
     model['B'] = 92           # History function parameter
     
-    # Electrical properties (CNT-epoxy composite)
     model['sigma_0'] = 1      # Base conductivity (S/m)
     model['lambda_11'] = 2.0     # Piezoresistivity coeff (longitudinal)
     model['lambda_12'] = 0.5     # Piezoresistivity coeff (transverse)
@@ -464,12 +405,9 @@ if __name__ == "__main__":
     model['V_applied'] = 1.0     # Applied voltage (V)
     model['alpha_elec'] = 0.1    # Electrical loss weight
     
-    # Domain bounds
     model['lb'] = np.array([0.0, 0.0])
     model['ub'] = np.array([model['L'], model['W']])
     
-    # ==================== HOLE CONFIGURATION ====================
-    # Options: 'circle', 'rect', or 'mixed'
     model['num_holes'] = 3
     model['hole_type'] = 'circle'  # Change to 'rect' or 'mixed' as needed
     model['holes'] = generate_random_holes(
@@ -477,13 +415,11 @@ if __name__ == "__main__":
         hole_type=model['hole_type'], seed=111
     )
 
-    # ==================== NEURAL NETWORK ====================s
     NN_param = dict()
     # 4 outputs: u, v, φ, ϕ (displacement, displacement, damage, voltage)
     NN_param['layers'] = [2, 50, 50, 50, 4]
     NN_param['data_type'] = tf.float64
     
-    # ==================== GEOMETRY ====================
     domainCorners = np.array([[0, 0], [model['W'], 0.], 
                               [0, model['L']], [model['W'], model['L']]])
     myQuad = Quadrilateral(domainCorners)
@@ -559,7 +495,6 @@ if __name__ == "__main__":
 
     phi_pred_old = hist_grid
     
-    # ==================== CREATE MODEL ====================
     modelNN = PINN_PF_Electric(model, NN_param)    
     num_train_its = 500
     num_lbfgs_its = 500
@@ -640,7 +575,6 @@ if __name__ == "__main__":
         print('Training time: %.4f' % (elapsed))
         
         # ==================== PREDICTIONS ====================
-        # ==================== PREDICTIONS ====================
         u_pred, v_pred, phi_pred, voltage_pred, elas_energy_pred, frac_energy_pred, energy_elec_pred, hist_grid = \
             modelNN.predict(Grid, hist_grid, v_delta)
         
@@ -650,7 +584,6 @@ if __name__ == "__main__":
         phi_pred = np.maximum(phi_pred, phi_pred_old)
         phi_pred_old = phi_pred
         
-        # ==================== COMPUTE RESISTANCE ====================
         # Get top electrode points (y close to 1)
         top_mask = Grid[:, 1] > 0.95
         if np.any(top_mask):
@@ -677,7 +610,6 @@ if __name__ == "__main__":
         total_eelec = modelNN.sess.run(modelNN.loss_energy_elec, tf_dict_energy)
         energy_history.append([total_eu, total_ephi, total_eelec])
         
-        # ==================== SAVE PLOTS ====================
         # Use scatter-based plots for filtered grids with holes
         filename = f'Step_{iStep:04d}_Phi'
         plotFieldScatter(xGrid, yGrid, phi_pred, 'Damage Field $\\phi$', '$\\phi$',
@@ -714,7 +646,6 @@ if __name__ == "__main__":
         # Save model
         modelNN.save_model('./' + foldername + '/', iStep)
         
-        # ==================== STORE DATA FOR GIF ====================
         step_data = {
             'step': int(iStep),
             'v_delta': float(v_delta),
@@ -734,7 +665,6 @@ if __name__ == "__main__":
         
         print('Completed ' + str(iStep + 1) + ' of ' + str(nSteps) + '.')    
     
-    # ==================== FINAL PLOTS ====================
     plotResistanceHistory(np.array(step_history), np.array(resistance_history),
                          'Resistance_History', figHeight, figWidth)
     
@@ -745,7 +675,6 @@ if __name__ == "__main__":
         'deltaV': deltaV
     })
     
-    # ==================== SAVE SIMULATION DATA FOR GIF ====================
     import json
     
     # Prepare complete data for visualization script
