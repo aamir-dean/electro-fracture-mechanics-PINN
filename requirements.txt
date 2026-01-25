@@ -1,0 +1,7 @@
+# Core dependencies
+tensorflow>=2.10.0,<2.16
+numpy>=1.21.0,<2.0
+scipy>=1.7.0
+matplotlib>=3.5.0
+imageio>=2.20.0
+geomdl>=5.2.0

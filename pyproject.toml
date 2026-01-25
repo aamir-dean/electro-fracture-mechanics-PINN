@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dem-phasefield-electric"
+version = "1.0.0"
+description = "Deep Energy Method for Electromechanical Phase Field Fracture with Piezoresistive Self-Sensing"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+authors = [
+    {name = "Betim Bahtiri"}
+]
+keywords = [
+    "deep energy method",
+    "DEM",
+    "phase field",
+    "fracture mechanics",
+    "piezoresistivity",
+    "self-sensing materials",
+    "electromechanical coupling",
+    "TensorFlow",
+    "physics-informed neural network"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "tensorflow>=2.10.0,<2.16",
+    "numpy>=1.21.0,<2.0",
+    "scipy>=1.7.0",
+    "matplotlib>=3.5.0",
+    "imageio>=2.20.0",
+    "geomdl>=5.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/BBahtiri/electro-fracture-mechanics-PINN"
+Documentation = "https://github.com/BBahtiri/electro-fracture-mechanics-PINN#readme"
+Repository = "https://github.com/BBahtiri/electro-fracture-mechanics-PINN"
+Issues = "https://github.com/BBahtiri/electro-fracture-mechanics-PINN/issues"
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311']
+
+[tool.isort]
+profile = "black"
+line_length = 100

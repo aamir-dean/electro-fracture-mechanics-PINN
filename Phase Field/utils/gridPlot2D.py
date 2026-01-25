@@ -13,7 +13,7 @@ def scatterPlot(X_f,figHeight,figWidth,filename):
     plt.tight_layout()
     plt.savefig(filename +'.pdf',dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
 
 def genGrid(nPred,L,secBound):
@@ -94,7 +94,7 @@ def plotPhiStrainEnerg(nPred,xGrid,yGrid,phi_pred,frac_energy_pred,iStep,figHeig
     plt.tight_layout()
     plt.savefig(filename +".png",dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
    
     # Plotting the strain energy densities
@@ -113,7 +113,7 @@ def plotPhiStrainEnerg(nPred,xGrid,yGrid,phi_pred,frac_energy_pred,iStep,figHeig
     plt.tight_layout()
     plt.savefig(filename + ".png",dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
     
 def plotDispStrainEnerg(nPred,xGrid,yGrid,u_pred,v_pred,elas_energy_pred,iStep,figHeight,figWidth):
@@ -167,7 +167,7 @@ def plotDispStrainEnerg(nPred,xGrid,yGrid,u_pred,v_pred,elas_energy_pred,iStep,f
     plt.tight_layout()
     plt.savefig(filename + ".png",dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
     
     # Plotting the strain energy densities
@@ -185,7 +185,7 @@ def plotDispStrainEnerg(nPred,xGrid,yGrid,u_pred,v_pred,elas_energy_pred,iStep,f
     plt.tight_layout()
     plt.savefig(filename + ".png",dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
     
     filename = "Scatter_"+iStep
@@ -200,7 +200,7 @@ def plotDispStrainEnerg(nPred,xGrid,yGrid,u_pred,v_pred,elas_energy_pred,iStep,f
     plt.tight_layout()
     plt.savefig(filename +".pdf",dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()					
     
 def plotConvergence(iter,adam_buff,lbfgs_buff,iStep,figHeight,figWidth):
@@ -219,7 +219,7 @@ def plotConvergence(iter,adam_buff,lbfgs_buff,iStep,figHeight,figWidth):
     plt.tight_layout()
     plt.savefig(filename +".pdf", dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
     
 def plotForceDisp(fdGraph,figHeight,figWidth):           
@@ -234,7 +234,7 @@ def plotForceDisp(fdGraph,figHeight,figWidth):
     plt.tight_layout()
     plt.savefig(filename + ".pdf", dpi=700, facecolor='w', edgecolor='w', 
                     transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
     
 def plot1dPhi(yPred,phi_pred_1d,phi_exact,iStep,figHeight,figWidth):
@@ -251,7 +251,7 @@ def plot1dPhi(yPred,phi_pred_1d,phi_exact,iStep,figHeight,figWidth):
     plt.tight_layout()
     plt.savefig(filename +".pdf", dpi=700, facecolor='w', edgecolor='w', 
                 transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
     
 def plot1dPhisymmDN(yPred,phi_pred_1d,phi_exact,iStep,xVal,figHeight,figWidth):
@@ -269,7 +269,7 @@ def plot1dPhisymmDN(yPred,phi_pred_1d,phi_exact,iStep,xVal,figHeight,figWidth):
     plt.savefig(filename + str(iStep) + "xVal" +str(xVal) +".png", 
                         dpi=700, facecolor='w', edgecolor='w', 
                         transparent = 'true', bbox_inches = 'tight')
-    plt.show()
+    # plt.show()
     plt.close()
     
 def createFolder(folder_name):
