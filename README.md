@@ -140,4 +140,4 @@ MIT License - see [LICENSE](LICENSE)
 
 ## 👤 Author
 
-**Betim Bahtiri**
+**Betim Bahtiri and Aamir Dean**
